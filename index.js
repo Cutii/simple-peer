@@ -3,7 +3,6 @@ module.exports = Peer
 var debug = require('debug')('simple-peer')
 var getBrowserRTC = require('get-browser-rtc')
 var inherits = require('inherits')
-var randombytes = require('randombytes')
 var stream = require('readable-stream')
 
 var MAX_BUFFERED_AMOUNT = 64 * 1024
@@ -19,7 +18,7 @@ function Peer (opts) {
   var self = this
   if (!(self instanceof Peer)) return new Peer(opts)
 
-  self._id = randombytes(4).toString('hex').slice(0, 7)
+  self._id = random()
   self._debug('new peer %o', opts)
 
   opts = Object.assign({
@@ -29,7 +28,7 @@ function Peer (opts) {
   stream.Duplex.call(self, opts)
 
   self.channelName = opts.initiator
-    ? opts.channelName || randombytes(20).toString('hex')
+    ? opts.channelName || random()
     : null
 
   // Needed by _transformConstraints, so set this early
@@ -789,3 +788,7 @@ Peer.prototype._transformConstraints = function (constraints) {
 }
 
 function noop () {}
+
+function random() {
+  return String(Math.random() * 10000000000000000).split('.')[0]
+}
